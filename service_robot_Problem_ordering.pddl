@@ -1,6 +1,6 @@
-(define (problem breakfast_simple) (:domain service_robot)
+(define (problem breakfast_ordering_critical) (:domain service_robot)
     (:objects 
-        counter - location
+        table counter fridge - location
         butter jam - topping
         bread - base
         knife - tool
@@ -10,19 +10,18 @@
         (robot-at counter)
         (gripper-empty)
 
-        (prep-location counter)
+        (prep-location table)
 
         (at bread counter)
-        (at jam counter)
-        (at butter counter)
+        (at butter fridge)
+        (at jam fridge)
         (at knife counter)
     )
 
     (:goal (and
-        (prepared butter)
-        (prepared jam)
         (prepared bread)
-        )
-    )
+        (prepared jam)
+        (prepared butter)
+    ))
 
 )

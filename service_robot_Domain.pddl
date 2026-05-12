@@ -5,10 +5,11 @@
     ;remove requirements that are not needed
     (:requirements :strips :typing)
 
-    (:types object ingredient tool location
-            
+    (:types 
+        object location
+        ingredient tool - object
+        base topping - ingredient
     )
-
 
     (:predicates 
         (robot-at ?l - location)
@@ -17,9 +18,10 @@
         (gripper-empty)
         (holding ?o - object)
 
-        (prepared-at ?i - ingredient ?l - location)
+        (prepared ?i - ingredient)
+        (prep-location ?l - location)
+        (base-ready)
     )
-
 
 
     (:action pick-up
@@ -59,16 +61,34 @@
         )
     )
 
-    (:action prepare
-        :parameters (?i - ingredient ?t - tool ?l - location)
+    (:action prepare-base
+        :parameters (?b - base ?t - tool ?l - location)
         :precondition (and 
             (robot-at ?l)
             (gripper-empty)
-            (at ?i ?l)
+            (prep-location ?l)
+            (at ?b ?l)
             (at ?t ?l)
         )
         :effect (and 
-            (prepared-at ?i ?l)
+            (prepared ?b)
+            (base-ready)
         )
     )
+
+    (:action prepare-topping
+        :parameters (?i - topping ?t - tool ?l - location)
+        :precondition (and 
+        (robot-at ?l)
+        (gripper-empty)
+        (base-ready)
+        (prep-location ?l)
+        (at ?i ?l)
+        (at ?t ?l)
+        )
+        :effect (and 
+        (prepared ?i)
+        )
+    )
+    
 )
