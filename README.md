@@ -41,3 +41,9 @@ Discuss:
 
 - impact of manipulation constraints on planning
 - modelling resource-like constraints
+
+## Running ENHSP locally
+
+java -jar ~/enhsp/ENHSP-Public/enhsp-dist/enhsp.jar \
+  -o service_robot_pddlPlus_Domain.pddl \
+  -f service_robot_pddlPlus_Problem.pddl

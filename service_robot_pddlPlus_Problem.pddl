@@ -1,8 +1,9 @@
-(define (problem breakfast_fresh) (:domain service_robot_pddlPlus)
-(:objects 
-    counter fridge - location
-    butter jam - topping
-    bread - base
+(define (problem breakfast_fresh)
+(:domain service_robot_pddlPlus)
+
+(:objects
+    counter fridge drawer - location
+    bread butter jam - ingredient
     knife - tool
 )
 
@@ -10,31 +11,33 @@
     (robot-at counter)
     (gripper-empty)
 
+    (at knife counter)
+
     (prep-location counter)
+
+    (is-bread bread)
+    (is-butter butter)
+    (is-jam jam)
 
     (at bread counter)
     (at butter fridge)
     (at jam fridge)
-    (at knife counter)
 
-    (= (freshness bread) 20)
-    (= (freshness jam) 20)
-    (= (freshness butter) 20)
+    (= (freshness bread) 100)
+    (= (freshness butter) 100)
+    (= (freshness jam) 100)
 
-    (exposed bread)
-    (exposed jam)
-    (exposed butter)
+    (= (prep-progress bread) 0)
+    (= (prep-progress butter) 0)
+    (= (prep-progress jam) 0)
 )
 
 (:goal (and
     (prepared bread)
     (prepared jam)
     (prepared butter)
-
-    (not (spoiled bread))
-    (not (spoiled butter))
-    (not (spoiled jam))
-    )
+  
+)
 )
 
 )
