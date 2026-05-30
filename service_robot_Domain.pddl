@@ -81,12 +81,11 @@
         :parameters (?t - tool ?l - location)
         :precondition (and 
         (robot-at ?l)
-        (gripper-empty)
+        (holding ?t)
         (prepared bread)
         (prep-location ?l)
         (at butter ?l)
         (can-spread ?t)
-        (at ?t ?l)
         )
         :effect (and 
         (prepared butter)
@@ -97,12 +96,11 @@
         :parameters (?t - tool ?l - location)
         :precondition (and 
         (robot-at ?l)
-        (gripper-empty)
+        (holding ?t)
         (prepared butter)
         (prep-location ?l)
         (can-spread ?t)
         (at jam ?l)
-        (at ?t ?l)
         )
         :effect (and 
         (prepared jam)
