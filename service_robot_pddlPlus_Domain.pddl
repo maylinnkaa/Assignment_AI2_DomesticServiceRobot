@@ -10,69 +10,46 @@
 (:predicates
     (robot-at ?l - location)
     (at ?o - object ?l - location)
-
-    (prep-location ?l - location)
-
     (gripper-empty)
     (holding ?o - object)
 
-    (is-bread ?i - ingredient)
-    (is-butter ?i - ingredient)
-    (is-jam ?i - ingredient)
+    (can-toast ?t - tool)
+    (can-spread ?t - tool)
 
-    (bread-ready)
-    (butter-ready)
-
-    (exposed ?i - ingredient)
+    (prep-location ?l - location)
     (prepared ?i - ingredient)
+    (served-meal)
+
+    (moving)
+    (moving-to ?l - location)
+
     (spoiled ?i - ingredient)
+    (perishable ?i - ingredient)
 )
 
 (:functions
     (freshness ?i - ingredient)
-    (prep-progress ?i - ingredient)
+    (degradation-rate ?i - ingredient)
+    (move-progress)
+    (move-duration)
 )
 
-(:action move
-    :parameters (?from ?to - location)
-    :precondition (and 
-        (robot-at ?from)
-    )
-    :effect (and 
-        (robot-at ?to)
-        (not (robot-at ?from))
-    )
-)
 
-(:action pick-up-tool
-    :parameters (?t - tool ?l - location)
+; ---------------------- Instant actions -----------------------
+
+(:action pick-up
+    :parameters (?o - object ?l - location)
     :precondition (and 
         (robot-at ?l)
-        (at ?t ?l)
+        (at ?o ?l)
         (gripper-empty)
         )
 
     :effect (and
-        (holding ?t)
-        (not (at ?t ?l))
+        (holding ?o)
+        (not (at ?o ?l))
         (not (gripper-empty))
-        )
     )
-
-(:action pick-up-ingredient
-    :parameters (?i - ingredient ?l - location)
-    :precondition (and 
-        (robot-at ?l)
-        (at ?i ?l)
-        (gripper-empty)
-        )
-
-    :effect (and
-        (holding ?i)
-        (not (at ?i ?l))
-        (not (gripper-empty))
-        (exposed ?i)
-        )
 )
 
 (:action put-down
@@ -88,76 +65,114 @@
     )
 )
 
+; ----------------------- Movement ------------------------
+
+(:action start-move
+    :parameters (?from - location ?to - location)
+    :precondition (and 
+        (robot-at ?from)
+        (not (moving))
+    )
+    :effect (and 
+        (moving)
+        (not(robot-at ?from))
+        (moving-to ?to)
+        (assign (move-progress) 0))
+)
+
+(:process travel
+    :parameters ()
+    :precondition (and
+        (moving)
+    )
+    :effect (and
+        (increase (move-progress) (* #t 1.0))
+    )
+)
+
+(:event arrive
+    :parameters (?l - location)
+    :precondition (and
+        (moving)
+        (moving-to ?l)
+        (>= (move-progress) (move-duration))
+    )
+    :effect (and
+        (not (moving))
+        (not (moving-to ?l))
+        (robot-at ?l)
+    )
+)
+
+
+; -------------------- Food degradation ------------------------
+
 (:process degrade-food
     :parameters (?i - ingredient)
     :precondition (and
-        (exposed ?i)
+        (perishable ?i)
+        (not (at ?i fridge))
+        (not (prepared ?i))
         (not (spoiled ?i))
+        (> (freshness ?i) 0)
     )
-    :effect (decrease (freshness ?i) (* #t 0.1))
+    :effect (decrease (freshness ?i) (* #t (degradation-rate ?i)))
 )
 
 (:event food-spoils
     :parameters (?i - ingredient)
     :precondition (and
-        (exposed ?i)
+        (perishable ?i)
         (<= (freshness ?i) 0)
+        (not (spoiled ?i))
     )
     :effect (spoiled ?i)
 )
 
-(:process prepare-food
-    :parameters (?i - ingredient ?t - tool ?l - location)
-    :precondition (and
+; ---------------------- Prepare food (instant actions) ------------------------
+
+(:action toast-bread
+    :parameters (?t - tool ?l - location)
+    :precondition (and 
         (robot-at ?l)
-        (exposed ?i)
-        (at ?i ?l)
-        (at ?t ?l)
+        (gripper-empty)
         (prep-location ?l)
-        (not (prepared ?i))
-        (not (spoiled ?i))
+        (at bread ?l)
+        (can-toast ?t)
+        (at ?t ?l)
     )
-    :effect (increase (prep-progress ?i) (* #t 1))
+    :effect (prepared bread)
 )
 
-(:event bread-prepared
-    :parameters (?i - ingredient)
+(:action spread-butter
+    :parameters (?t - tool ?l - location)
     :precondition (and
-        (is-bread ?i)
-        (>= (prep-progress ?i) 5)
-        (not (prepared ?i))
+        (robot-at ?l) 
+        (holding ?t) 
+        (prepared bread)
+        (prep-location ?l) 
+        (at butter ?l)
+        (can-spread ?t) 
+        (not (spoiled butter))
     )
-    :effect (and
-        (prepared ?i)
-        (bread-ready)
-    )
+    :effect (prepared butter)
 )
 
-(:event butter-prepared
-    :parameters (?i - ingredient)
-    :precondition (and
-        (is-butter ?i)
-        (bread-ready)
-        (>= (prep-progress ?i) 5)
-        (not (prepared ?i))
+(:action spread-jam
+    :parameters (?t - tool ?l - location)
+    :precondition (and 
+        (robot-at ?l) 
+        (holding ?t) 
+        (prepared butter)
+        (prep-location ?l) 
+        (at jam ?l)
+        (can-spread ?t) 
+        (not (spoiled jam))
     )
-    :effect (and
-        (prepared ?i)
-        (butter-ready)
+    :effect (and 
+        (prepared jam)
+        (served-meal)
     )
 )
-
-(:event jam-prepared
-    :parameters (?i - ingredient)
-    :precondition (and
-        (is-jam ?i)
-        (bread-ready)
-        (butter-ready)
-        (>= (prep-progress ?i) 5)
-        (not (prepared ?i))
-    )
-    :effect (prepared ?i)
-)
-
 )
 
