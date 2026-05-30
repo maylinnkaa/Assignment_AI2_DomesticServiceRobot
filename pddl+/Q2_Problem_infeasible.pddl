@@ -25,12 +25,12 @@
     (at jam fridge)
 
     (= (move-progress) 0)
-    (= (move-duration) 5)
+    (= (move-duration) 10)
 
     (perishable butter)
     (perishable jam)
 
-    (= (freshness butter) 20)
+    (= (freshness butter) 10)
     (= (freshness jam) 6)
 
     (= (degradation-rate butter) 1)
