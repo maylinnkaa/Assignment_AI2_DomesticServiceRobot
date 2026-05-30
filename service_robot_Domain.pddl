@@ -8,7 +8,6 @@
     (:types 
         object location
         ingredient tool - object
-        base topping - ingredient
     )
 
     (:predicates 
@@ -18,11 +17,13 @@
         (gripper-empty)
         (holding ?o - object)
 
+        (can-toast ?t - tool)
+        (can-spread ?t - tool)
+
         (prepared ?i - ingredient)
         (prep-location ?l - location)
-        (base-ready)
+        (served-meal)
     )
-
 
     (:action pick-up
         :parameters (?o - object ?l - location)
@@ -61,34 +62,51 @@
         )
     )
 
-    (:action prepare-base
-        :parameters (?b - base ?t - tool ?l - location)
+    (:action toast-bread
+        :parameters (?t - tool ?l - location)
         :precondition (and 
             (robot-at ?l)
             (gripper-empty)
             (prep-location ?l)
-            (at ?b ?l)
+            (at bread ?l)
+            (can-toast ?t)
             (at ?t ?l)
         )
         :effect (and 
-            (prepared ?b)
-            (base-ready)
+            (prepared bread)
         )
     )
 
-    (:action prepare-topping
-        :parameters (?i - topping ?t - tool ?l - location)
+    (:action spread-butter
+        :parameters (?t - tool ?l - location)
         :precondition (and 
         (robot-at ?l)
         (gripper-empty)
-        (base-ready)
+        (prepared bread)
         (prep-location ?l)
-        (at ?i ?l)
+        (at butter ?l)
+        (can-spread ?t)
         (at ?t ?l)
         )
         :effect (and 
-        (prepared ?i)
+        (prepared butter)
         )
     )
     
+    (:action spread-jam
+        :parameters (?t - tool ?l - location)
+        :precondition (and 
+        (robot-at ?l)
+        (gripper-empty)
+        (prepared butter)
+        (prep-location ?l)
+        (can-spread ?t)
+        (at jam ?l)
+        (at ?t ?l)
+        )
+        :effect (and 
+        (prepared jam)
+        (served-meal)
+        )
+    )
 )
