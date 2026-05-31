@@ -32,13 +32,13 @@ Q2_infeasible.pddl
 Requirements and how they're met:
 
 - **Object handling constraints** — `pick-up` requires an empty gripper and sets `holding`; `put-down` frees it. Only one object can be held at a time.
-- **Minimal problem** — `q1_problem_minimal.pddl`: all ingredients and tools already at the counter, so the plan is a straight prepare sequence.
-- **Ordering-critical problem** — `q1_problem_critical.pddl`: ingredients start in the fridge/drawer, so the one-object limit forces a specific fetch-and-return order.
+- **Minimal problem** — `Q1_Problem_minimal.pddl`: all ingredients and tools already at the counter, so the plan is a straight prepare sequence.
+- **Ordering-critical problem** — `Q1_Problem_critical.pddl`: ingredients start in the fridge/drawer, so the one-object limit forces a specific fetch-and-return order.
 - **Valid plans** — see Q1 Results below.
 
 ### Q1 Results
 
-**Minimal problem** (`q1_problem_minimal.pddl`):
+**Minimal problem** (`Q1_Problem_minimal.pddl`):
 
 ```
 (toast-bread toaster counter)
@@ -47,7 +47,7 @@ Requirements and how they're met:
 (spread-jam knife counter)
 ```
 
-**Ordering-critical problem** (`q1_problem_critical.pddl`):
+**Ordering-critical problem** (`Q1_Problem_critical.pddl`):
 
 ```
 (toast-bread toaster counter)
@@ -86,11 +86,11 @@ feasibility is caused by it alone.
 
 | | Feasible | Infeasible |
 |---|---|---|
-| `move-duration` | 5 | 12 |
+| `move-duration` | 5 | 10 |
 | Butter freshness (start) | 20 | 20 |
 | Jam freshness (start) | 8 | 8 |
 | Butter spoils before use? | No | No |
-| Jam spoils before use? | No (5 < 8) | Yes (12 > 8) |
+| Jam spoils before use? | No (5 < 8) | Yes (10 > 8) |
 | Result | reaches `served-meal` | no plan found |
  
 The jam survives only while `move-duration < freshness(jam)`. Below the
