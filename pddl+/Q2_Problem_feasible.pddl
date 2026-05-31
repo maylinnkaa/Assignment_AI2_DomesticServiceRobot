@@ -30,8 +30,8 @@
     (perishable butter)
     (perishable jam)
 
-    (= (freshness butter) 10)
-    (= (freshness jam) 6)
+    (= (freshness butter) 20)
+    (= (freshness jam) 8)
 
     (= (degradation-rate butter) 1)
     (= (degradation-rate jam) 1)
