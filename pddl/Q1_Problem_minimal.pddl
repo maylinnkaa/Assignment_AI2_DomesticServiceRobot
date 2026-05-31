@@ -1,3 +1,6 @@
+
+; Q1 — minimal: everything starts at the counter
+
 (define (problem breakfast_simple) (:domain service_robot)
     (:objects 
         counter - location

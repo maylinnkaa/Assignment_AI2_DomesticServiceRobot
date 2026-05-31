@@ -1,3 +1,4 @@
+
 (define (domain service_robot_pddlPlus)
 
 (:requirements :strips :fluents :typing :negative-preconditions :time)

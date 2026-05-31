@@ -1,5 +1,7 @@
 
-(define (problem breakfast_fresh)
+; Q2 — infeasible: move-duration 10 > jam freshness 8
+
+(define (problem breakfast_fresh_infeasible)
 (:domain service_robot_pddlPlus)
 
 (:objects
@@ -30,8 +32,8 @@
     (perishable butter)
     (perishable jam)
 
-    (= (freshness butter) 10)
-    (= (freshness jam) 6)
+    (= (freshness butter) 20)
+    (= (freshness jam) 8)
 
     (= (degradation-rate butter) 1)
     (= (degradation-rate jam) 1)

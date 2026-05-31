@@ -1,4 +1,8 @@
+
+; Q1 — ordering-critical: ingredients in fridge/drawer, gripper forces order
+
 (define (problem breakfast_ordering_critical) (:domain service_robot)
+
     (:objects 
         counter fridge drawer - location
         butter jam bread - ingredient

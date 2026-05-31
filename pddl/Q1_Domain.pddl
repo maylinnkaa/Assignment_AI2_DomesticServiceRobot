@@ -1,8 +1,6 @@
-;Header and description
 
 (define (domain service_robot)
 
-    ;remove requirements that are not needed
     (:requirements :strips :typing)
 
     (:types 
@@ -24,6 +22,8 @@
         (prep-location ?l - location)
         (served-meal)
     )
+
+; ---------------------- Object handling -----------------------
 
     (:action pick-up
         :parameters (?o - object ?l - location)
@@ -53,6 +53,8 @@
         )
     )
 
+; ----------------------- Movement -----------------------------
+
     (:action move
         :parameters (?from ?to - location)
         :precondition (robot-at ?from)
@@ -61,6 +63,8 @@
             (not (robot-at ?from))
         )
     )
+
+; ---------------------- Prepare food --------------------------
 
     (:action toast-bread
         :parameters (?t - tool ?l - location)

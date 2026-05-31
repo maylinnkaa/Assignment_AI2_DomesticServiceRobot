@@ -1,5 +1,7 @@
 
-(define (problem breakfast_fresh)
+; Q2 — feasible: move-duration 5 < jam freshness 8
+
+(define (problem breakfast_fresh_feasible)
 (:domain service_robot_pddlPlus)
 
 (:objects
