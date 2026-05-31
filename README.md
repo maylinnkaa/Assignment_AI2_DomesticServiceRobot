@@ -38,6 +38,37 @@ Requirements and how they're met:
 
 ### Q1 Results
 
+**Minimal problem** (`q1_problem_minimal.pddl`):
+
+```
+(toast-bread toaster counter)
+(pick-up knife counter)
+(spread-butter knife counter)
+(spread-jam knife counter)
+```
+
+**Ordering-critical problem** (`q1_problem_critical.pddl`):
+
+```
+(toast-bread toaster counter)
+(move counter fridge)
+(pick-up butter fridge)
+(move fridge counter)
+(put-down butter counter)
+(move counter fridge)
+(pick-up jam fridge)
+(move fridge counter)
+(put-down jam counter)
+(move counter drawer)
+(pick-up knife drawer)
+(move drawer counter)
+(spread-butter knife counter)
+(spread-jam knife counter)
+```
+
+The robot makes three separate round trips (butter, jam, then the knife) because
+the single gripper forces one object at a time. This is what makes the problem
+"ordering-critical".
 
 ## Q2 – PDDL+ Model
 
@@ -55,17 +86,55 @@ feasibility is caused by it alone.
 
 | | Feasible | Infeasible |
 |---|---|---|
-| `move-duration` | 5 | 10 |
+| `move-duration` | 5 | 12 |
+| Butter freshness (start) | 20 | 20 |
 | Jam freshness (start) | 8 | 8 |
-| Jam exposure (one trip) | 5 | 10 |
-| Spoils before use? | No (5 < 8) | Yes (10 > 8) |
+| Butter spoils before use? | No | No |
+| Jam spoils before use? | No (5 < 8) | Yes (12 > 8) |
 | Result | reaches `served-meal` | no plan found |
-
+ 
 The jam survives only while `move-duration < freshness(jam)`. Below the
 threshold (8) the jam reaches the counter before the `food-spoils` event fires;
 at or above it, the event triggers in transit, `spread-jam` can never run, and
-`served-meal` becomes unreachable. The "no plan found" result for the infeasible
-problem is the intended outcome, not a broken file.
+`served-meal` becomes unreachable. Butter starts much fresher (20), so it never
+risks spoilage at either delay — jam is the tighter constraint and the one that
+determines feasibility. The "no plan found" result for the infeasible problem is
+the intended outcome, not a broken file.
+
+**Feasible plan** (`Q2_Problem_feasible.pddl`, `move-duration = 5`):
+ 
+```
+0:    (pick-up butter fridge)
+0:    (start-move fridge counter)
+5.0:  (put-down butter counter)
+5.0:  (toast-bread toaster counter)
+5.0:  (start-move counter drawer)
+10.0: (pick-up knife drawer)
+10.0: (start-move drawer counter)
+15.0: (spread-butter knife counter)
+15.0: (put-down knife counter)
+15.0: (start-move counter fridge)
+20.0: (pick-up jam fridge)
+20.0: (start-move fridge counter)
+25.0: (put-down jam counter)
+25.0: (pick-up knife counter)
+25.0: (spread-jam knife counter)
+```
+ 
+Jam is fetched last and exposed for only its final return trip (5 < 8), so it
+reaches the counter before spoiling. Butter is fetched first; although it stays
+out of the fridge longer, its freshness (20) is high enough that it never gets
+close to spoiling.
+ 
+**Infeasible plan** (`Q2_Problem_infeasible.pddl`, `move-duration = 12`):
+ 
+```
+No plan found — the problem is unsolvable.
+```
+ 
+Jam needs at least one fridge-to-counter trip (12 units) to be used, but it only
+has 8 units of freshness, so `food-spoils` fires in transit no matter the order.
+`spread-jam` can then never run, making `served-meal` unreachable.
 
 ## Discussion
 
